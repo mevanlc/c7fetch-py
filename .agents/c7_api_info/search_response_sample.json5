@@ -1,0 +1,55 @@
+/*
+ExampleCurlRequest:
+  curl --request GET --url 'https://context7.com/api/v1/search?query=react' -H "Authorization: Bearer $CONTEXT7_API_KEY"
+ExampleResponseBodyJson:
+*/
+{
+  "results": [
+    {
+      "id": "/websites/react_dev",
+      "title": "React",
+      "description": "React is a JavaScript library for building user interfaces. It allows developers to create interactive web and native applications using reusable components, enabling efficient and scalable UI development.",
+      "branch": "main",
+      "lastUpdateDate": "2025-08-30T17:48:56.092Z",
+      "state": "finalized",
+      "totalTokens": 391665,
+      "totalSnippets": 1752,
+      "totalPages": 193,
+      "stars": -1,
+      "trustScore": 8,
+      "versions": []
+    },
+    {
+      "id": "/websites/16_reactjs",
+      "title": "React",
+      "description": "React is a JavaScript library for building user interfaces, designed for gradual adoption and creating interactive web applications.",
+      "branch": "main",
+      "lastUpdateDate": "2025-07-31T18:16:47.851Z",
+      "state": "finalized",
+      "totalTokens": 142208,
+      "totalSnippets": 650,
+      "totalPages": 74,
+      "stars": -1,
+      "trustScore": 7.5,
+      "versions": []
+    },
+    {
+      "id": "/websites/17_reactjs",
+      "title": "React",
+      "description": "React is a JavaScript library for building user interfaces, enabling declarative, component-based, and efficient UI development.",
+      "branch": "main",
+      "lastUpdateDate": "2025-09-05T18:55:17.104Z",
+      "state": "finalized",
+      "totalTokens": 164156,
+      "totalSnippets": 934,
+      "totalPages": 76,
+      "stars": -1,
+      "trustScore": 7.5,
+      "versions": []
+    }
+  ],
+  "metadata": {
+    "authentication": "none"
+  }
+}
+

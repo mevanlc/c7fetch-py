@@ -1,0 +1,15 @@
+[project]
+name = "c7fetch-py"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32.5",
+    "typer>=0.19.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.13.1",
+]

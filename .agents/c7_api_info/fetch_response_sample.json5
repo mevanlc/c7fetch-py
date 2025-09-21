@@ -1,0 +1,133 @@
+/*
+  URLVariable: context7CompatibleLibraryID ExampleValue: modelcontextprotocol/modelcontextprotocol
+  ExampleCurlRequest: 
+    curl 'https://context7.com/api/v1/{context7CompatibleLibraryID}?type=json&tokens=5000&topic=initialize' -H "Authorization: Bearer $CONTEXT7_API_KEY"
+  Example response:
+*/
+{
+  "snippets": [
+    {
+      "codeTitle": "Initialize Kotlin Project (Windows)",
+      "codeDescription": "Commands to create a new directory, navigate into it, and initialize a new Kotlin project using Gradle on Windows.",
+      "codeLanguage": "Powershell",
+      "codeTokens": 70,
+      "codeId": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/quickstart/server.mdx#_snippet_44",
+      "pageTitle": "Build an MCP Server",
+      "codeList": [
+        {
+          "language": "Powershell",
+          "code": "# Create a new directory for our project\nmd weather\ncd weather\n\n# Initialize a new kotlin project\ngrade init\n"
+        }
+      ],
+      "relevance": 0.03137255,
+      "model": "gemini-2.5-flash-lite"
+    },
+    {
+      "codeTitle": "Initialize Method",
+      "codeDescription": "Represents the initialization method for the model context protocol. Further details on its parameters and return values are not provided in this snippet.",
+      "codeLanguage": "typescript",
+      "codeTokens": 51,
+      "codeId": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-06-18/schema.mdx#_snippet_78",
+      "pageTitle": "Schema Reference - Model Context Protocol",
+      "codeList": [
+        {
+          "language": "typescript",
+          "code": "initialize()"
+        }
+      ],
+      "relevance": 0.031009614,
+      "model": "gemini-2.5-flash-lite"
+    },
+    {
+      "codeTitle": "Gradle Project Initialization",
+      "codeDescription": "Initializes a new Gradle project. After running, select 'Application' for project type, 'Kotlin' for language, and 'Java 17' for Java version.",
+      "codeLanguage": "bash",
+      "codeTokens": 59,
+      "codeId": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/quickstart/client.mdx#_snippet_30",
+      "pageTitle": "Build an MCP Client",
+      "codeList": [
+        {
+          "language": "bash",
+          "code": "gradle init"
+        }
+      ],
+      "relevance": 0.030477948,
+      "model": "gemini-2.5-flash-lite"
+    }
+  ],
+  "qaItems": [
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/concepts/architecture.mdx#_qa_11",
+      "question": "What is the purpose of the `initialized` notification in MCP?",
+      "answer": "The `initialized` notification is sent by the client to the server as an acknowledgment after receiving the server's initialization response. It signifies that the connection is ready for normal message exchange.",
+      "tokens": 60,
+      "pageTitle": "Core architecture"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/concepts/architecture.mdx#_qa_9",
+      "question": "What happens during the initialization phase of an MCP connection?",
+      "answer": "The client sends an `initialize` request, the server responds with its protocol version and capabilities, and the client sends an `initialized` notification to acknowledge. After this, normal message exchange can begin.",
+      "tokens": 62,
+      "pageTitle": "Core architecture"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2024-11-05/basic/lifecycle.mdx#_qa_4",
+      "question": "What is the purpose of the 'initialized' notification in the Model Context Protocol (MCP)?",
+      "answer": "After a successful initialization, the client sends an 'initialized' notification in the Model Context Protocol (MCP) to signal to the server that it is ready to begin normal operations.",
+      "tokens": 65,
+      "pageTitle": "Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2024-11-05/basic/lifecycle.mdx#_qa_5",
+      "question": "What are the restrictions on requests before and after the 'initialized' notification in the Model Context Protocol (MCP)?",
+      "answer": "Before the server responds to the 'initialize' request, the client should not send requests other than pings. After receiving the 'initialized' notification, the server should not send requests other than pings and logging until the client is ready.",
+      "tokens": 81,
+      "pageTitle": "Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-06-18/basic/lifecycle.mdx#_qa_10",
+      "question": "What does the 'capabilities' field in the 'initialize' response signify?",
+      "answer": "The 'capabilities' field in the 'initialize' response allows the server to inform the client about its supported features, such as logging, prompts, resource subscription, and tool listing.",
+      "tokens": 64,
+      "pageTitle": "Model Context Protocol Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/draft/basic/lifecycle.mdx#_qa_5",
+      "question": "What are the restrictions on requests before the 'initialized' notification in the Model Context Protocol (MCP)?",
+      "answer": "Before the server responds to the 'initialize' request, the client should not send requests other than pings. After the 'initialize' response but before the 'initialized' notification, the server should not send requests other than pings and logging.",
+      "tokens": 83,
+      "pageTitle": "Model Context Protocol Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-06-18/basic/lifecycle.mdx#_qa_9",
+      "question": "What does the 'capabilities' field in the 'initialize' request signify?",
+      "answer": "The 'capabilities' field in the 'initialize' request allows the client to inform the server about its supported features, such as roots listing, sampling, and elicitation.",
+      "tokens": 62,
+      "pageTitle": "Model Context Protocol Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/draft/basic/lifecycle.mdx#_qa_10",
+      "question": "What does the 'capabilities' object in the 'initialize' request signify?",
+      "answer": "The 'capabilities' object in the 'initialize' request details the client's supported features, such as listing changed roots, sampling, and elicitation.",
+      "tokens": 58,
+      "pageTitle": "Model Context Protocol Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/draft/basic/lifecycle.mdx#_qa_11",
+      "question": "What does the 'capabilities' object in the server's 'initialize' response signify?",
+      "answer": "The 'capabilities' object in the server's response outlines the server's supported features, including logging, prompt management, resource subscription, and tool list changes.",
+      "tokens": 61,
+      "pageTitle": "Model Context Protocol Lifecycle"
+    },
+    {
+      "id": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2024-11-05/basic/lifecycle.mdx#_qa_1",
+      "question": "What is the purpose of the Initialization phase in the Model Context Protocol (MCP)?",
+      "answer": "The Initialization phase is the first interaction in the Model Context Protocol (MCP) lifecycle. It is used to establish protocol version compatibility, exchange and negotiate capabilities, and share implementation details between the client and server.",
+      "tokens": 69,
+      "pageTitle": "Lifecycle"
+    }
+  ],
+  "metadata": {
+    "authentication": "none"
+  }
+}

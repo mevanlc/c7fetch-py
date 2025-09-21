@@ -4,7 +4,7 @@ import os
 import json
 from dataclasses import dataclass
 
-CONFIG_DIR = os.path.expanduser("~/.config/c7fetch")
+CONFIG_DIR = os.path.expanduser("~/.config/c7fetch-dev")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 
 

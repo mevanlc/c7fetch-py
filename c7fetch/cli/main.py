@@ -1,5 +1,3 @@
-import typer
-
 from . import config, fetch, review, search, typer_util
 
 app = typer_util.TyperAlias()
@@ -9,7 +7,7 @@ app.add_module(fetch)
 app.add_module(review)
 
 def main():
-    pass
+    app()
 
 if __name__ == "__main__":
     app()

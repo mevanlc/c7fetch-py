@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import fnmatch
+import math
 import textwrap
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -37,10 +39,44 @@ def _format_description(desc: str, width: int = 70) -> str:
     return textwrap.shorten(desc, width=width, placeholder="…")
 
 
+def _current_time() -> datetime:
+    """Return the current UTC time.
+
+    Separated into a helper so tests can monkeypatch a stable value.
+    """
+
+    return datetime.now(timezone.utc)
+
+
+def _humanize_last_updated(raw_value: str | None) -> str:
+    if not raw_value:
+        return "-"
+    if raw_value == "-":
+        return raw_value
+
+    normalized = raw_value.replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return raw_value
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+
+    delta = _current_time() - parsed
+    total_seconds = delta.total_seconds()
+    if total_seconds <= 0:
+        days = 0
+    else:
+        days = math.ceil(total_seconds / 86400)
+    unit = "day" if days == 1 else "days"
+    return f"{days} {unit}"
+
+
 def _rows_from_result(result: dict) -> List[str]:
     library_id = result.get("id", "-")
     title = result.get("title", "-")
-    last_updated = result.get("lastUpdateDate", "-")
+    last_updated = _humanize_last_updated(result.get("lastUpdateDate"))
     stars = result.get("stars")
     trust = result.get("trustScore")
     description = result.get("description", "")

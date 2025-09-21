@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 
 import pytest
 from typer.testing import CliRunner
@@ -68,7 +69,7 @@ def test_search_requires_api_key(monkeypatch):
     result = runner.invoke(search.app, ["React Docs"])
 
     assert result.exit_code == 1
-    assert "API key is not configured" in result.stderr
+    assert "API key is not configured" in result.stdout
 
 
 def test_fetch_requires_api_key(monkeypatch):
@@ -83,10 +84,10 @@ def test_fetch_requires_api_key(monkeypatch):
     result = runner.invoke(fetch.app, ["/libs/react"])
 
     assert result.exit_code == 1
-    assert "API key is not configured" in result.stderr
+    assert "API key is not configured" in result.stdout
 
 
-def test_review_command_renders_table(tmp_path, config_setup):
+def test_review_command_renders_table(tmp_path, config_setup, monkeypatch):
     runner = CliRunner()
     search_dir = common.config_path("search_dir")
     common.ensure_directory(search_dir)
@@ -104,11 +105,17 @@ def test_review_command_renders_table(tmp_path, config_setup):
     }
     search_file = search_dir / "react.json"
     common.write_json(search_file, payload)
+    monkeypatch.setattr(
+        review,
+        "_current_time",
+        lambda: datetime(2025, 9, 21, tzinfo=timezone.utc),
+    )
 
     result = runner.invoke(review.app, ["--merge"])
 
     assert result.exit_code == 0, result.stdout
     assert "React" in result.stdout
+    assert "16 days" in result.stdout
     assert "Done." in result.stdout
 
 

@@ -43,7 +43,7 @@ def set(key: str, value: str):
     if key not in [s.key for s in settings.SCHEMA]:
         rich.print(f"Unknown configuration key: [red]{key}[/red]")
         raise typer.Exit(code=1)
-    rich.print(f"Setting [green]{key}[/green] to [yellow]{value}[/yellow]...")
+    rich.print(f"Setting [green]{key}[/green] to [yellow]{value}[/yellow]")
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
     config = {}

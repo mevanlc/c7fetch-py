@@ -10,7 +10,7 @@ CONFIG_DIR = os.environ.get("C7FETCH_CONFIG_DIR", os.path.expanduser("~/.config/
 def config_file_path() -> str:
     """Return the absolute path to the settings file."""
 
-    return os.path.join(CONFIG_DIR, "settings.json")
+    return os.path.join(CONFIG_DIR, "config.json")
 
 
 @dataclass

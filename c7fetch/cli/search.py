@@ -48,12 +48,23 @@ def _execute(query: str, output: Optional[Path], output_dir: Optional[Path], ove
     if output and len(queries) != 1:
         raise typer.BadParameter("--output can only be used with a single query.")
 
+    if not api.is_api_key_configured():
+        typer.echo(
+            "Error: Context7 API key is not configured. Set one via `c7fetch config set apikey <value>` or configure `apikey_env`.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
     base_dir = _resolve_base_dir(output_dir)
     common.ensure_directory(base_dir)
     overwrite_flag = _should_overwrite(overwrite)
 
     for q in queries:
-        payload = api.search(q)
+        try:
+            payload = api.search(q)
+        except api.MissingApiKey as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(code=1) from None
         if output:
             target = output
         else:

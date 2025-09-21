@@ -1,19 +1,10 @@
-# TODO Phase 1: Core CLI Foundation
+# TODO Phase 1 – Error Handling Hardening
 
-## Completed
-- [x] Update config defaults to use `~/.config/c7fetch-dev` and scaffold required dependencies.
-- [x] Implement Context7 API helper functions with auth, request delay, and error mapping.
-- [x] Wire CLI entrypoint to invoke the Typer application.
-- [x] Build `search`, `fetch`, and `review` commands with file management and config integration.
-- [x] Add shared CLI utilities for path handling and sanitisation.
-- [x] Extend `pyproject.toml` with runtime (`rich`, `pathvalidate`) and dev (`pytest`, `responses`) dependencies.
-- [x] Introduce CLI-focused unit tests using `CliRunner` and API stubs.
-- [x] Run `ruff` to validate style and imports.
+## In Progress
+- [x] Add a credential preflight helper in `c7fetch.c7.api` to let commands detect missing API keys without making a request.
+- [x] Update `search` and `fetch` command implementations to use the helper, print a friendly error, and exit with status 1 when credentials are absent.
+- [x] Extend CLI tests to cover the missing-key path for both commands.
 
-## Follow-ups
-- [ ] Add structured logging / verbosity controls keyed off `loglevel`.
-- [ ] Expand `fetch` to support batch selection from cached search results and library globbing.
-- [ ] Surface result counts and summaries in `search`/`review` output for quicker triage.
-- [ ] Add retry/backoff strategy for transient API failures (5xx/429).
-- [ ] Document new command options and examples in `README.md`.
-- [ ] Enable automated test execution (ensure `pytest` installed in local env or CI).
+## Up Next
+- [ ] Introduce shared CLI error handling so other `ApiError` subclasses surface as readable messages instead of tracebacks.
+- [ ] Document preferred credential setup (env var vs config file) in the README once UX is improved.

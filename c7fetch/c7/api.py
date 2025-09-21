@@ -66,6 +66,17 @@ def _resolve_api_key() -> str:
     raise MissingApiKey("Context7 API key is not configured. Use config set or environment variable.")
 
 
+def is_api_key_configured() -> bool:
+    """Return True if an API key is discoverable via config or environment."""
+    env_var = settings.get_setting("apikey_env")
+    if env_var:
+        candidate = os.getenv(env_var)
+        if candidate:
+            return True
+    key = settings.get_setting("apikey")
+    return bool(key)
+
+
 def _base_headers() -> Dict[str, str]:
     headers = {
         "Authorization": f"Bearer {_resolve_api_key()}",

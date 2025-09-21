@@ -59,17 +59,28 @@ def _execute(
     if fmt_normalized not in {"text", "json"}:
         raise typer.BadParameter("--format must be either 'text' or 'json'.")
 
+    if not api.is_api_key_configured():
+        typer.echo(
+            "Error: Context7 API key is not configured. Set one via `c7fetch config set apikey <value>` or configure `apikey_env`.",
+            err=True,
+        )
+        raise typer.Exit(code=1)
+
     token_limit = tokens if tokens is not None else common.default_token_count()
     base_dir = _resolve_base_dir(output_dir)
     overwrite_flag = _should_overwrite(overwrite)
 
     for library_id in library_ids:
-        response = api.fetch(
-            library_id,
-            tokens=token_limit,
-            format=fmt_normalized,
-            topic=topic,
-        )
+        try:
+            response = api.fetch(
+                library_id,
+                tokens=token_limit,
+                format=fmt_normalized,
+                topic=topic,
+            )
+        except api.MissingApiKey as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(code=1) from None
         if output is not None:
             target = output
         else:

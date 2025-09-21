@@ -56,6 +56,36 @@ def test_fetch_command_writes_file(tmp_path, monkeypatch, config_setup):
     assert "Saved fetched content" in result.stdout
 
 
+def test_search_requires_api_key(monkeypatch):
+    runner = CliRunner()
+    monkeypatch.setattr(api, "is_api_key_configured", lambda: False)
+
+    def fail_search(_query):  # pragma: no cover - safety guard
+        raise AssertionError("search should not be invoked when API key is missing")
+
+    monkeypatch.setattr(api, "search", fail_search)
+
+    result = runner.invoke(search.app, ["React Docs"])
+
+    assert result.exit_code == 1
+    assert "API key is not configured" in result.stderr
+
+
+def test_fetch_requires_api_key(monkeypatch):
+    runner = CliRunner()
+    monkeypatch.setattr(api, "is_api_key_configured", lambda: False)
+
+    def fail_fetch(*_args, **_kwargs):  # pragma: no cover - safety guard
+        raise AssertionError("fetch should not be invoked when API key is missing")
+
+    monkeypatch.setattr(api, "fetch", fail_fetch)
+
+    result = runner.invoke(fetch.app, ["/libs/react"])
+
+    assert result.exit_code == 1
+    assert "API key is not configured" in result.stderr
+
+
 def test_review_command_renders_table(tmp_path, config_setup):
     runner = CliRunner()
     search_dir = common.config_path("search_dir")
@@ -75,7 +105,7 @@ def test_review_command_renders_table(tmp_path, config_setup):
     search_file = search_dir / "react.json"
     common.write_json(search_file, payload)
 
-    result = runner.invoke(review.app, [])
+    result = runner.invoke(review.app, ["--merge"])
 
     assert result.exit_code == 0, result.stdout
     assert "React" in result.stdout

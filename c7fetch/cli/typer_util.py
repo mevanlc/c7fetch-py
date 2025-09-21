@@ -21,10 +21,14 @@ class TyperAliasGroup(typer.core.TyperGroup):
 
 class TyperAlias(typer.Typer):
     def __init__(self, *args, **kwargs):
-        if "module" in kwargs and "name" not in kwargs:
-            modname = kwargs["module"]
+        cs = kwargs.setdefault("context_settings", {})
+        cs["help_option_names"] = list(
+            set(cs.get("help_option_names", [])) | {"-h", "--help"}
+        )
+        modname = kwargs.pop("module", None)
+        if modname and "name" not in kwargs:
             kwargs["name"] = modname.split(".")[-1]
-            del kwargs["module"]
+
         kwargs.setdefault("cls", TyperAliasGroup)
         kwargs.setdefault("no_args_is_help", True)
         super().__init__(*args, **kwargs)

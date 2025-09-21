@@ -13,7 +13,7 @@ from c7fetch.cli import common, fetch, review, search, settings
 def config_setup(tmp_path, monkeypatch):
     config_dir = tmp_path / "config"
     config_dir.mkdir()
-    config_file = config_dir / "config.json"
+    config_file = config_dir / "settings.json"
     config = {
         "output_dir": str(tmp_path / "out"),
         "apikey": "test-key",
@@ -21,7 +21,6 @@ def config_setup(tmp_path, monkeypatch):
     }
     config_file.write_text(json.dumps(config), encoding="utf-8")
     monkeypatch.setattr(settings, "CONFIG_DIR", str(config_dir))
-    monkeypatch.setattr(settings, "CONFIG_FILE", str(config_file))
     yield
 
 

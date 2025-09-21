@@ -4,8 +4,13 @@ import os
 import re
 from dataclasses import dataclass
 
-CONFIG_DIR = os.path.expanduser("~/.config/c7fetch-dev")
-CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
+CONFIG_DIR = os.environ.get("C7FETCH_CONFIG_DIR", os.path.expanduser("~/.config/c7fetch-dev"))
+
+
+def config_file_path() -> str:
+    """Return the absolute path to the settings file."""
+
+    return os.path.join(CONFIG_DIR, "settings.json")
 
 
 @dataclass
@@ -69,9 +74,10 @@ SETTINGS_KEY2DEFAULT = {s.key: s.default for s in SCHEMA}
 
 def get_setting_with_default(key: str) -> str:
     """Get a configuration setting or its default value."""
-    if not os.path.exists(CONFIG_FILE):
+    config_file = config_file_path()
+    if not os.path.exists(config_file):
         return SETTINGS_KEY2DEFAULT.get(key, "")
-    with open(CONFIG_FILE, "r") as f:
+    with open(config_file, "r") as f:
         config = json.load(f)
     return config.get(key, SETTINGS_KEY2DEFAULT.get(key, ""))
 

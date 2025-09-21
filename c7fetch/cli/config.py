@@ -6,7 +6,7 @@ import rich.table as rt
 import typer
 
 from . import settings, typer_util
-from .settings import CONFIG_DIR, CONFIG_FILE
+from .settings import CONFIG_DIR, config_file_path
 
 app = typer_util.TyperAlias(module=__name__)
 
@@ -29,8 +29,9 @@ def describe():
 def list():
     """List all configurations."""
     rich.print("Listing all configurations...")
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as f:
+    config_file = config_file_path()
+    if os.path.exists(config_file):
+        with open(config_file, "r") as f:
             config = json.load(f)
             rich.print_json(config)
     else:
@@ -47,7 +48,8 @@ def set(key: str, value: str):
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
     config = {}
-    if os.path.exists(CONFIG_FILE):
+    config_file = config_file_path()
+    if os.path.exists(config_file):
         config = _read_config_file()
     config[key] = value
     _write_config_file(config)
@@ -77,13 +79,13 @@ def unset(key: str):
 
 
 def _write_config_file(config: dict):
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+    with open(config_file_path(), "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
 
 
 def _read_config_file():
     _require_config_file()
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+    with open(config_file_path(), "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -93,7 +95,8 @@ def _config_key_not_found(key: str):
 
 
 def _require_config_file():
-    if not os.path.exists(CONFIG_FILE):
-        rich.print(f"No configuration file found at {CONFIG_FILE}.")
+    config_file = config_file_path()
+    if not os.path.exists(config_file):
+        rich.print(f"No configuration file found at {config_file}.")
         rich.print("Please run 'c7fetch config set <key> <value>' to create one.")
         raise typer.Exit(code=1)

@@ -1,7 +1,7 @@
 import functools
-import re
-import os
 import json
+import os
+import re
 from dataclasses import dataclass
 
 CONFIG_DIR = os.path.expanduser("~/.config/c7fetch-dev")

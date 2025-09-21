@@ -6,7 +6,6 @@ import rich.table as rt
 import typer
 
 from . import settings, typer_util
-
 from .settings import CONFIG_DIR, CONFIG_FILE
 
 app = typer_util.TyperAlias(module=__name__)
@@ -15,7 +14,7 @@ app = typer_util.TyperAlias(module=__name__)
 @app.command("describe | desc")
 def describe():
     """Describe available configuration settings."""
-    typer.echo("\n")
+    rich.print("\n")
     table = rt.Table(title="Configuration Settings")
     table.add_column("Key", style="cyan", no_wrap=True)
     table.add_column("Description", style="magenta")
@@ -23,28 +22,28 @@ def describe():
     for setting in settings.SCHEMA:
         table.add_row(setting.key, setting.desc, setting.default)
     rich.print(table)
-    typer.echo("\nUse 'c7fetch config set <key> <value>' to set a configuration.")
+    rich.print("\nUse 'c7fetch config set <key> <value>' to set a configuration.")
 
 
 @app.command()
 def list():
     """List all configurations."""
-    typer.echo("Listing all configurations...")
+    rich.print("Listing all configurations...")
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
-            rich.print_json(data=config)
+            rich.print_json(config)
     else:
-        typer.echo("No configuration file found.")
+        rich.print("No configuration file found.")
 
 
 @app.command()
 def set(key: str, value: str):
     """Set a configuration key to a value."""
     if key not in [s.key for s in settings.SCHEMA]:
-        typer.echo(f"Unknown configuration key: [red]{key}[/red]")
+        rich.print(f"Unknown configuration key: [red]{key}[/red]")
         raise typer.Exit(code=1)
-    typer.echo(f"Setting [green]{key}[/green] to [yellow]{value}[/yellow]...")
+    rich.print(f"Setting [green]{key}[/green] to [yellow]{value}[/yellow]...")
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
     config = {}
@@ -52,7 +51,7 @@ def set(key: str, value: str):
         config = _read_config_file()
     config[key] = value
     _write_config_file(config)
-    typer.echo("Configuration updated.")
+    rich.print("Configuration updated.")
 
 
 @app.command()
@@ -60,7 +59,7 @@ def get(key: str):
     """Get the value of a configuration key."""
     config = _read_config_file()
     if key in config:
-        typer.echo(f"{config[key]}")
+        rich.print(f"{config[key]}")
     else:
         _config_key_not_found(key)
 
@@ -72,25 +71,29 @@ def unset(key: str):
     if key in config:
         del config[key]
         _write_config_file(config)
-        typer.echo(f"Configuration key [green]'{key}'[/green] unset.")
+        rich.print(f"Configuration key [green]'{key}'[/green] unset.")
     else:
         _config_key_not_found(key)
+
 
 def _write_config_file(config: dict):
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
+
 
 def _read_config_file():
     _require_config_file()
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def _config_key_not_found(key: str):
-    typer.echo(f"Configuration key [red]'{key}'[/red] not found.")
+    rich.print(f"Configuration key [red]'{key}'[/red] not found.")
     raise typer.Exit(code=1)
+
 
 def _require_config_file():
     if not os.path.exists(CONFIG_FILE):
-        typer.echo(f"No configuration file found at {CONFIG_FILE}.")
-        typer.echo("Please run 'c7fetch config set <key> <value>' to create one.")
+        rich.print(f"No configuration file found at {CONFIG_FILE}.")
+        rich.print("Please run 'c7fetch config set <key> <value>' to create one.")
         raise typer.Exit(code=1)

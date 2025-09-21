@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional
 
+import rich
 import typer
 
 from c7fetch.c7 import api
@@ -30,14 +31,14 @@ def _extension(fmt: str) -> str:
 
 def _write_payload(path: Path, payload: api.FetchResponse, overwrite: bool) -> None:
     if path.exists() and not overwrite:
-        typer.echo(f"Skipping existing file: {path}")
+        rich.print(f"Skipping existing file: {path}")
         return
     common.ensure_directory(path.parent)
     if payload.content_type == "application/json":
         common.write_json(path, payload.payload)
     else:
         path.write_text(str(payload.payload), encoding="utf-8")
-    typer.echo(f"Saved fetched content to {path}")
+    rich.print(f"Saved fetched content to {path}")
 
 
 def _execute(
@@ -53,16 +54,17 @@ def _execute(
         raise typer.BadParameter("Provide at least one library id to fetch.")
 
     if output is not None and len(library_ids) != 1:
-        raise typer.BadParameter("--output is only valid when fetching a single library id.")
+        raise typer.BadParameter(
+            "--output is only valid when fetching a single library id."
+        )
 
     fmt_normalized = fmt.lower()
     if fmt_normalized not in {"text", "json"}:
         raise typer.BadParameter("--format must be either 'text' or 'json'.")
 
     if not api.is_api_key_configured():
-        typer.echo(
+        rich.print(
             "Error: Context7 API key is not configured. Set one via `c7fetch config set apikey <value>` or configure `apikey_env`.",
-            err=True,
         )
         raise typer.Exit(code=1)
 
@@ -79,16 +81,18 @@ def _execute(
                 topic=topic,
             )
         except api.MissingApiKey as exc:
-            typer.echo(str(exc), err=True)
+            rich.print(str(exc))
             raise typer.Exit(code=1) from None
         if output is not None:
             target = output
         else:
-            filename = common.auto_filename([library_id, topic], _extension(fmt_normalized))
+            filename = common.auto_filename(
+                [library_id, topic], _extension(fmt_normalized)
+            )
             target = common.render_path(base_dir, filename)
         _write_payload(target, response, overwrite_flag)
 
-    typer.echo("Done.")
+    rich.print("Done.")
 
 
 @app.callback(invoke_without_command=True)
@@ -122,7 +126,6 @@ def callback(
         "--output",
         "-o",
         help="Write the response to this file (only with a single library id).",
-        path_type=Path,
         dir_okay=False,
         writable=True,
         resolve_path=True,
@@ -131,7 +134,6 @@ def callback(
         None,
         "--output-dir",
         help="Directory for fetched documents (defaults to configured output_dir).",
-        path_type=Path,
         file_okay=False,
         resolve_path=True,
     ),

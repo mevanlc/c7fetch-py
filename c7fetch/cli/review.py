@@ -5,6 +5,7 @@ import textwrap
 from pathlib import Path
 from typing import List, Optional
 
+import rich
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -66,7 +67,7 @@ def _execute(
 ) -> None:
     search_files = _collect_files(file)
     if not search_files:
-        typer.echo("No search result files found. Run 'c7fetch search' first.")
+        rich.print("No search result files found. Run 'c7fetch search' first.")
         raise typer.Exit(code=1)
 
     aggregated_rows: List[List[str]] = []
@@ -75,7 +76,7 @@ def _execute(
         try:
             payload = common.load_json(file_path)
         except Exception as exc:  # pragma: no cover - best effort error surfacing
-            typer.echo(f"Failed to read {file_path}: {exc}")
+            rich.print(f"Failed to read {file_path}: {exc}")
             continue
         results = payload.get("results", [])
         filtered_rows = [
@@ -86,7 +87,7 @@ def _execute(
             and _matches(result.get("description", ""), description)
         ]
         if not filtered_rows:
-            typer.echo(f"No matching results in {file_path}.")
+            rich.print(f"No matching results in {file_path}.")
             continue
 
         if merge:
@@ -115,7 +116,7 @@ def _execute(
             table.add_row(*row)
         console.print(table)
 
-    typer.echo("Done.")
+    rich.print("Done.")
 
 
 @app.callback(invoke_without_command=True)
@@ -126,7 +127,6 @@ def callback(
         "--file",
         "-f",
         help="Specific search result JSON file to review.",
-        path_type=Path,
         file_okay=True,
         dir_okay=False,
         exists=True,

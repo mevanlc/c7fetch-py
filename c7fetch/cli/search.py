@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
+import rich
 import typer
 
 from c7fetch.c7 import api
@@ -22,7 +23,9 @@ def _normalize_queries(raw: str) -> list[str]:
 
 def _resolve_base_dir(output_dir: Optional[Path]) -> Path:
     if output_dir is not None:
-        return (output_dir.expanduser() if not output_dir.is_absolute() else output_dir).resolve()
+        return (
+            output_dir.expanduser() if not output_dir.is_absolute() else output_dir
+        ).resolve()
     return common.config_path("search_dir")
 
 
@@ -34,13 +37,18 @@ def _should_overwrite(override: Optional[bool]) -> bool:
 
 def _write_result(path: Path, payload: dict, overwrite: bool) -> None:
     if path.exists() and not overwrite:
-        typer.echo(f"Skipping existing file: {path}")
+        rich.print(f"Skipping existing file: {path}")
         return
     common.write_json(path, payload)
-    typer.echo(f"Saved search results to {path}")
+    rich.print(f"Saved search results to {path}")
 
 
-def _execute(query: str, output: Optional[Path], output_dir: Optional[Path], overwrite: Optional[bool]) -> None:
+def _execute(
+    query: str,
+    output: Optional[Path],
+    output_dir: Optional[Path],
+    overwrite: Optional[bool],
+) -> None:
     queries = _normalize_queries(query)
     if not queries:
         raise typer.BadParameter("At least one non-empty query is required.")
@@ -49,9 +57,8 @@ def _execute(query: str, output: Optional[Path], output_dir: Optional[Path], ove
         raise typer.BadParameter("--output can only be used with a single query.")
 
     if not api.is_api_key_configured():
-        typer.echo(
-            "Error: Context7 API key is not configured. Set one via `c7fetch config set apikey <value>` or configure `apikey_env`.",
-            err=True,
+        rich.print(
+            "Error: Context7 API key is not configured. Set one via `c7fetch config set apikey <value>` or configure `apikey_env`."
         )
         raise typer.Exit(code=1)
 
@@ -63,7 +70,7 @@ def _execute(query: str, output: Optional[Path], output_dir: Optional[Path], ove
         try:
             payload = api.search(q)
         except api.MissingApiKey as exc:
-            typer.echo(str(exc), err=True)
+            rich.print(exc)
             raise typer.Exit(code=1) from None
         if output:
             target = output
@@ -72,19 +79,20 @@ def _execute(query: str, output: Optional[Path], output_dir: Optional[Path], ove
             target = common.render_path(base_dir, filename)
         _write_result(target, payload, overwrite_flag)
 
-    typer.echo("Done.")
+    rich.print("Done.")
 
 
 @app.callback(invoke_without_command=True)
 def callback(
     ctx: typer.Context,
-    query: Optional[str] = typer.Argument(None, help="Search query; use '|' to separate multiple queries."),
+    query: Optional[str] = typer.Argument(
+        None, help="Search query; use '|' to separate multiple queries."
+    ),
     output: Optional[Path] = typer.Option(
         None,
         "--output",
         "-o",
         help="Write results to this file (only valid for a single query).",
-        path_type=Path,
         dir_okay=False,
         writable=True,
         resolve_path=True,
@@ -93,7 +101,6 @@ def callback(
         None,
         "--output-dir",
         help="Directory for generated search JSON (defaults to config search_dir).",
-        path_type=Path,
         file_okay=False,
         resolve_path=True,
     ),
@@ -106,6 +113,6 @@ def callback(
     if ctx.invoked_subcommand:
         return
     if query is None:
-        typer.echo(ctx.command.get_help(ctx))
+        rich.print(ctx.command.get_help(ctx))
         raise typer.Exit(code=1)
     _execute(query, output, output_dir, overwrite)

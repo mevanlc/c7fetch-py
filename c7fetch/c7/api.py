@@ -63,7 +63,9 @@ def _resolve_api_key() -> str:
     key = settings.get_setting("apikey")
     if key:
         return key
-    raise MissingApiKey("Context7 API key is not configured. Use config set or environment variable.")
+    raise MissingApiKey(
+        "Context7 API key is not configured. Use config set or environment variable."
+    )
 
 
 def is_api_key_configured() -> bool:
@@ -85,7 +87,12 @@ def _base_headers() -> Dict[str, str]:
     return headers
 
 
-def _request(path: str, *, params: Optional[Dict[str, Any]] = None, accept: str = "application/json") -> requests.Response:
+def _request(
+    path: str,
+    *,
+    params: Optional[Dict[str, Any]] = None,
+    accept: str = "application/json",
+) -> requests.Response:
     _rate_limit_delay()
     url = f"{BASE_URL}/{path.lstrip('/')}"
     headers = _base_headers()
@@ -98,7 +105,9 @@ def _request(path: str, *, params: Optional[Dict[str, Any]] = None, accept: str 
     if response.status_code == 401:
         raise MissingApiKey("Context7 API rejected credentials (401 Unauthorized).")
     if response.status_code == 429:
-        raise HttpError("Context7 API rate limit reached (429). Retry after a delay.", status=429)
+        raise HttpError(
+            "Context7 API rate limit reached (429). Retry after a delay.", status=429
+        )
     if not response.ok:
         snippet = response.text[:200]
         raise HttpError(
@@ -116,7 +125,9 @@ def search(query: str) -> Dict[str, Any]:
     try:
         return response.json()
     except ValueError as exc:
-        raise ApiError("Context7 API returned invalid JSON for search response.") from exc
+        raise ApiError(
+            "Context7 API returned invalid JSON for search response."
+        ) from exc
 
 
 def fetch(
@@ -145,6 +156,8 @@ def fetch(
         try:
             payload = response.json()
         except ValueError as exc:
-            raise ApiError("Context7 API returned invalid JSON for fetch response.") from exc
+            raise ApiError(
+                "Context7 API returned invalid JSON for fetch response."
+            ) from exc
         return FetchResponse(payload=payload, content_type="application/json")
     return FetchResponse(payload=response.text, content_type="text/markdown")

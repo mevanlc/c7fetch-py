@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timezone
 
 import pytest
+from rich.console import Console
 from typer.testing import CliRunner
 
 from c7fetch.c7 import api
@@ -109,6 +110,11 @@ def test_review_command_renders_table(tmp_path, config_setup, monkeypatch):
         review,
         "_current_time",
         lambda: datetime(2025, 9, 21, tzinfo=timezone.utc),
+    )
+    monkeypatch.setattr(
+        review,
+        "console",
+        Console(width=120, force_terminal=True, record=True),
     )
 
     result = runner.invoke(review.app, ["--merge"])

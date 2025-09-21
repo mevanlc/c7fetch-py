@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import fnmatch
 import math
-import textwrap
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
@@ -31,12 +30,6 @@ def _matches(value: str, pattern: Optional[str]) -> bool:
     if not pattern:
         return True
     return fnmatch.fnmatch(value, pattern)
-
-
-def _format_description(desc: str, width: int = 70) -> str:
-    if not desc:
-        return ""
-    return textwrap.shorten(desc, width=width, placeholder="…")
 
 
 def _current_time() -> datetime:
@@ -90,8 +83,24 @@ def _rows_from_result(result: dict) -> List[str]:
         last_updated,
         stars_display,
         trust_display,
-        _format_description(description),
+        description,
     ]
+
+
+def _configure_table(table: Table) -> None:
+    table.add_column("Library ID", style="cyan", no_wrap=True)
+    table.add_column("Title", style="magenta", no_wrap=True)
+    table.add_column("Last Updated", style="green", no_wrap=True)
+    table.add_column("Stars", justify="right", no_wrap=True)
+    table.add_column("Trust", justify="right", no_wrap=True)
+    table.add_column(
+        "Description",
+        style="dim",
+        overflow="ellipsis",
+        max_width=70,
+        no_wrap=True,
+        ratio=1,
+    )
 
 
 def _execute(
@@ -130,24 +139,14 @@ def _execute(
             aggregated_rows.extend(filtered_rows)
         else:
             table = Table(title=f"Results from: {file_path}")
-            table.add_column("Library ID", style="cyan", no_wrap=True)
-            table.add_column("Title", style="magenta")
-            table.add_column("Last Updated", style="green")
-            table.add_column("Stars", justify="right")
-            table.add_column("Trust", justify="right")
-            table.add_column("Description", style="dim")
+            _configure_table(table)
             for row in filtered_rows:
                 table.add_row(*row)
             console.print(table)
 
     if merge and aggregated_rows:
         table = Table(title="Search Results")
-        table.add_column("Library ID", style="cyan", no_wrap=True)
-        table.add_column("Title", style="magenta")
-        table.add_column("Last Updated", style="green")
-        table.add_column("Stars", justify="right")
-        table.add_column("Trust", justify="right")
-        table.add_column("Description", style="dim")
+        _configure_table(table)
         for row in aggregated_rows:
             table.add_row(*row)
         console.print(table)

@@ -9,7 +9,16 @@ dependencies = [
     "typer>=0.19.1",
 ]
 
+# scripts
+
+[project.scripts]
+c7fetch = "c7fetch.cli.main:app"
+
 [dependency-groups]
 dev = [
     "ruff>=0.13.1",
 ]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

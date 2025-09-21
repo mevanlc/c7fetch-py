@@ -5,7 +5,7 @@ requires-python = ">=3.11"
 [[package]]
 name = "c7fetch-py"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "requests" },
     { name = "typer" },

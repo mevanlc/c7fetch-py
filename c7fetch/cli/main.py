@@ -8,10 +8,12 @@ app.add_module(search)
 app.add_module(fetch)
 app.add_module(review)
 
+
 # @app.callback(invoke_without_command=True)
 # ctx: typer.Context
 def main():
     pass
+
 
 if __name__ == "__main__":
     app()

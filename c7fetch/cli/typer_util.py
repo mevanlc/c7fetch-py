@@ -28,7 +28,7 @@ class TyperAlias(typer.Typer):
         kwargs.setdefault("cls", TyperAliasGroup)
         kwargs.setdefault("no_args_is_help", True)
         super().__init__(*args, **kwargs)
-    
+
     def add_module(self, module):
         app = getattr(module, "app", None)
         if app:

@@ -21,24 +21,16 @@ class SettingDesc:
 
 
 S_APIKEY = SettingDesc(key="apikey", desc="Context7 API key")
-S_APIKEY_ENV = SettingDesc(
-    key="apikey_env", desc="Context7 API key (read from env var)"
-)
-S_OUTPUT_DIR = SettingDesc(
-    key="output_dir", desc="Directory to save fetched files", default="./c7docs"
-)
+S_APIKEY_ENV = SettingDesc(key="apikey_env", desc="Context7 API key (read from env var)")
+S_OUTPUT_DIR = SettingDesc(key="output_dir", desc="Directory to save fetched files", default="./c7docs")
 S_SEARCH_DIR = SettingDesc(
     key="search_dir",
     desc="Directory to save search results",
     default="{output_dir}/search",
 )
 S_LOGLEVEL = SettingDesc(key="loglevel", desc="Logging level", default="INFO")
-S_TOKEN_COUNT = SettingDesc(
-    key="token_count", desc="Default token count for requests", default="10000"
-)
-S_NO_OVERWRITE = SettingDesc(
-    key="no_overwrite", desc="Do not overwrite existing files", default="false"
-)
+S_TOKEN_COUNT = SettingDesc(key="token_count", desc="Default token count for requests", default="10000")
+S_NO_OVERWRITE = SettingDesc(key="no_overwrite", desc="Do not overwrite existing files", default="false")
 S_DEFAULT_FORMAT = SettingDesc(
     key="default_format",
     desc="Default format for fetched documents (text or json)",

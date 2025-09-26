@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, List, Optional
+import typing
 
 from pathvalidate import sanitize_filename
 
@@ -19,7 +20,7 @@ def config_path(key: str) -> Path:
     return path if path.is_absolute() else Path.cwd() / path
 
 
-def parse_bool(value: str | bool | None) -> bool:
+def parse_bool(value: typing.Optional[str | bool]) -> bool:
     if isinstance(value, bool):
         return value
     if value is None:
@@ -52,15 +53,15 @@ def ensure_directory(path: Path) -> None:
 
 
 def auto_filename(parts: Iterable[Optional[str]], extension: str) -> str:
-    segments: list[str] = []
+    segments: List[str] = []
     for part in parts:
         if not part:
             continue
-        sanitized = (
-            sanitize_filename(str(part), replacement_text="_")
-            .replace(" ", "_")
-            .strip("._")
-        )
+        # Break into multiple statements for readability
+        part_str = str(part)
+        sanitized = sanitize_filename(part_str, replacement_text="_")
+        sanitized = sanitized.replace(" ", "_")
+        sanitized = sanitized.strip("._")
         if sanitized:
             segments.append(sanitized)
     stem = "_".join(segments) if segments else "output"
@@ -69,7 +70,8 @@ def auto_filename(parts: Iterable[Optional[str]], extension: str) -> str:
 
 def write_json(path: Path, data: Any) -> None:
     ensure_directory(path.parent)
-    path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
+    jsonstr = json.dumps(data, indent=2, sort_keys=True)
+    path.write_text(jsonstr, encoding="utf-8")
 
 
 def load_json(path: Path) -> Any:

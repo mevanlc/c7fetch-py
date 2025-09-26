@@ -1,14 +1,15 @@
 """NegColTable - A Table subclass with negative width column support."""
 
 import copy
+from functools import wraps
 from typing import TYPE_CHECKING, Any, List, Optional
 
 from rich.console import Console, ConsoleRenderable, RichCast
-from rich.measure import Measurement
 from rich.table import Column, Table
 
 if TYPE_CHECKING:
     from rich.console import Console, ConsoleOptions, RenderResult
+    from rich.measure import Measurement
 
 
 
@@ -201,9 +202,6 @@ class NegColTable(Table):
                 return temp.__rich_measure__(console, options)
         else:
             return super().__rich_measure__(console, options)
-
-from functools import wraps
-
 
 class NegColColumn(Column):
     @wraps(Column.__init__, assigned=['__signature__'])

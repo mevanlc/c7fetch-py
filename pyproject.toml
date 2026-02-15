@@ -16,6 +16,9 @@ dependencies = [
 [project.scripts]
 c7fetch = "c7fetch.cli.main:app"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [dependency-groups]
 dev = [
     "ruff>=0.13.1",

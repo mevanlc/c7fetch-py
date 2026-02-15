@@ -1,15 +1,16 @@
-from __future__ import annotations
-
 import fnmatch
 import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
+import typing
 
 import rich
 import typer
 from rich.console import Console
-from rich.table import Table
+from rich.table import Table, Column
+
+from c7fetch.table import NegColTable
 
 from . import common, typer_util
 
@@ -17,6 +18,8 @@ app = typer_util.TyperAlias(module=__name__)
 
 
 console = Console()
+
+term_width = console.size.width
 
 
 def _collect_files(explicit_file: Optional[Path]) -> List[Path]:
@@ -41,7 +44,7 @@ def _current_time() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _humanize_last_updated(raw_value: str | None) -> str:
+def _humanize_last_updated(raw_value: typing.Optional[str]) -> str:
     if not raw_value:
         return "-"
     if raw_value == "-":
@@ -66,7 +69,7 @@ def _humanize_last_updated(raw_value: str | None) -> str:
     return f"{days} {unit}"
 
 
-def _rows_from_result(result: dict) -> List[str]:
+def _rows_from_result(result: dict[str, str]) -> List[str]:
     library_id = result.get("id", "-")
     title = result.get("title", "-")
     last_updated = _humanize_last_updated(result.get("lastUpdateDate"))
@@ -87,20 +90,39 @@ def _rows_from_result(result: dict) -> List[str]:
     ]
 
 
-def _configure_table(table: Table) -> None:
-    table.add_column("Library ID", style="cyan", no_wrap=True)
-    table.add_column("Title", style="magenta", no_wrap=True)
-    table.add_column("Last Updated", style="green", no_wrap=True)
-    table.add_column("Stars", justify="right", no_wrap=True)
-    table.add_column("Trust", justify="right", no_wrap=True)
-    table.add_column(
-        "Description",
-        style="dim",
-        overflow="ellipsis",
-        max_width=70,
-        no_wrap=True,
-        ratio=1,
-    )
+def _configure_table(table: Table, rows: List[list[str]]) -> None:
+    def col_idx_gen():
+        for idx in range(len(rows[0])):
+            yield idx
+
+    col_indices = col_idx_gen()
+    columns = [
+        Column(_index=next(col_indices), header="ID", style="cyan", no_wrap=True),
+        Column(_index=next(col_indices), header="Title", style="magenta", no_wrap=True),
+        Column(_index=next(col_indices), header="Updated", style="green", no_wrap=True),
+        Column(_index=next(col_indices), header="⭐", no_wrap=True),
+        Column(_index=next(col_indices), header="Trust", no_wrap=True),
+        Column(_index=next(col_indices), header="Description", 
+               style="dim", 
+               no_wrap=True, 
+               width=-1),
+    ]
+
+    # debug_display_col_cfg(columns)
+
+    for column in columns:
+        table.columns.append(column)
+
+
+# def debug_display_col_cfg(colconfigs: List[Column]) -> None:
+#     tab = Table(title="Column Config Debug")
+#     kwarg_names = [k for k in colconfigs[0].rich_col_kwargs.keys()]
+#     for kwarg_name in kwarg_names:
+#         tab.add_column(kwarg_name)
+#     for colconfig in colconfigs:
+#         row = [str(colconfig.rich_col_kwargs.get(k, "")) for k in kwarg_names]
+#         tab.add_row(*row)
+#     console.print(tab)
 
 
 def _execute(
@@ -138,20 +160,23 @@ def _execute(
         if merge:
             aggregated_rows.extend(filtered_rows)
         else:
-            table = Table(title=f"Results from: {file_path}")
-            _configure_table(table)
+            table = _new_table(f"Results from: {file_path}", filtered_rows)
             for row in filtered_rows:
                 table.add_row(*row)
             console.print(table)
 
     if merge and aggregated_rows:
-        table = Table(title="Search Results")
-        _configure_table(table)
+        table = _new_table("Search Results", aggregated_rows)
         for row in aggregated_rows:
             table.add_row(*row)
         console.print(table)
 
     rich.print("Done.")
+
+def _new_table(title:str, aggregated_rows: List[List[str]]) -> NegColTable:
+    table = NegColTable(title=title)
+    _configure_table(table, aggregated_rows)
+    return table
 
 
 @app.callback(invoke_without_command=True)

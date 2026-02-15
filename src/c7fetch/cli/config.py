@@ -47,7 +47,7 @@ def set(key: str, value: str):
     rich.print(f"Setting [green]{key}[/green] to [yellow]{value}[/yellow]")
     if not os.path.exists(CONFIG_DIR):
         os.makedirs(CONFIG_DIR)
-    config = {}
+    config: dict[str, str] = {}
     config_file = config_file_path()
     if os.path.exists(config_file):
         config = _read_config_file()
@@ -78,7 +78,7 @@ def unset(key: str):
         _config_key_not_found(key)
 
 
-def _write_config_file(config: dict):
+def _write_config_file(config: dict[str, str]):
     with open(config_file_path(), "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4)
 

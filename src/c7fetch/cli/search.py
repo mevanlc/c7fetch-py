@@ -23,9 +23,7 @@ def _normalize_queries(raw: str) -> list[str]:
 
 def _resolve_base_dir(output_dir: Optional[Path]) -> Path:
     if output_dir is not None:
-        return (
-            output_dir.expanduser() if not output_dir.is_absolute() else output_dir
-        ).resolve()
+        return (output_dir.expanduser() if not output_dir.is_absolute() else output_dir).resolve()
     return common.config_path("search_dir")
 
 
@@ -85,9 +83,7 @@ def _execute(
 @app.callback(invoke_without_command=True)
 def callback(
     ctx: typer.Context,
-    query: Optional[str] = typer.Argument(
-        None, help="Search query; use '|' to separate multiple queries."
-    ),
+    query: Optional[str] = typer.Argument(None, help="Search query; use '|' to separate multiple queries."),
     output: Optional[Path] = typer.Option(
         None,
         "--output",

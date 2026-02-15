@@ -54,9 +54,7 @@ def _execute(
         raise typer.BadParameter("Provide at least one library id to fetch.")
 
     if output is not None and len(library_ids) != 1:
-        raise typer.BadParameter(
-            "--output is only valid when fetching a single library id."
-        )
+        raise typer.BadParameter("--output is only valid when fetching a single library id.")
 
     fmt_normalized = fmt.lower()
     if fmt_normalized not in {"text", "json"}:
@@ -86,9 +84,7 @@ def _execute(
         if output is not None:
             target = output
         else:
-            filename = common.auto_filename(
-                [library_id, topic], _extension(fmt_normalized)
-            )
+            filename = common.auto_filename([library_id, topic], _extension(fmt_normalized))
             target = common.render_path(base_dir, filename)
         _write_payload(target, response, overwrite_flag)
 

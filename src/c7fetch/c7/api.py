@@ -11,7 +11,7 @@ from c7fetch.cli import settings
 
 BASE_URL = "https://context7.com/api/v1"
 _TIMEOUT = 30
-_LAST_REQUEST_TS: float = 0.0
+_global_last_request_ts: float = 0.0
 
 
 class ApiError(Exception):
@@ -37,7 +37,7 @@ class FetchResponse:
 
 
 def _rate_limit_delay() -> None:
-    global _LAST_REQUEST_TS
+    global _global_last_request_ts
     delay_ms = settings.get_setting("request_delay")
     try:
         delay_seconds = max(int(delay_ms), 0) / 1000.0
@@ -48,10 +48,10 @@ def _rate_limit_delay() -> None:
         return
 
     now = time.monotonic()
-    elapsed = now - _LAST_REQUEST_TS if _LAST_REQUEST_TS else None
+    elapsed = now - _global_last_request_ts if _global_last_request_ts else None
     if elapsed is not None and elapsed < delay_seconds:
         time.sleep(delay_seconds - elapsed)
-    _LAST_REQUEST_TS = time.monotonic()
+    _global_last_request_ts = time.monotonic()
 
 
 def _resolve_api_key() -> str:
@@ -63,9 +63,7 @@ def _resolve_api_key() -> str:
     key = settings.get_setting("apikey")
     if key:
         return key
-    raise MissingApiKey(
-        "Context7 API key is not configured. Use config set or environment variable."
-    )
+    raise MissingApiKey("Context7 API key is not configured. Use config set or environment variable.")
 
 
 def is_api_key_configured() -> bool:
@@ -105,9 +103,7 @@ def _request(
     if response.status_code == 401:
         raise MissingApiKey("Context7 API rejected credentials (401 Unauthorized).")
     if response.status_code == 429:
-        raise HttpError(
-            "Context7 API rate limit reached (429). Retry after a delay.", status=429
-        )
+        raise HttpError("Context7 API rate limit reached (429). Retry after a delay.", status=429)
     if not response.ok:
         snippet = response.text[:200]
         raise HttpError(
@@ -125,9 +121,7 @@ def search(query: str) -> Dict[str, Any]:
     try:
         return response.json()
     except ValueError as exc:
-        raise ApiError(
-            "Context7 API returned invalid JSON for search response."
-        ) from exc
+        raise ApiError("Context7 API returned invalid JSON for search response.") from exc
 
 
 def fetch(
@@ -156,8 +150,6 @@ def fetch(
         try:
             payload = response.json()
         except ValueError as exc:
-            raise ApiError(
-                "Context7 API returned invalid JSON for fetch response."
-            ) from exc
+            raise ApiError("Context7 API returned invalid JSON for fetch response.") from exc
         return FetchResponse(payload=payload, content_type="application/json")
     return FetchResponse(payload=response.text, content_type="text/markdown")

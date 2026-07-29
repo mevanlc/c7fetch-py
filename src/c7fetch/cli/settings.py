@@ -79,7 +79,7 @@ def _get_version() -> str:
     try:
         import importlib.metadata
 
-        return importlib.metadata.version("c7fetch")
+        return importlib.metadata.version("c7fetch-py")
     except Exception:
         return "0.0.0"
 
